@@ -1,0 +1,12 @@
+{
+  "name": "爸爸闖江湖 · 英文修煉",
+  "short_name": "闖江湖",
+  "description": "給長輩設計的旅遊英文學習 PWA，武俠主題闖關 + 發音練習",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FBF5EA",
+  "theme_color": "#C53030",
+  "lang": "zh-Hant"
+}
