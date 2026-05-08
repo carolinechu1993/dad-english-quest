@@ -21,9 +21,6 @@
   --shadow-lg: 0 12px 32px rgba(80, 40, 20, 0.16);
   --font-base: 18px;
 }
-/* 字體大小 - 全域用 root font-size 控制，所有 rem 單位會跟著放大 */
-html.fontsize-large { font-size: 20px; }
-html.fontsize-xlarge { font-size: 22px; }
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 /* 鍵盤/輔助技術使用者看得到焦點 */
 button:focus { outline: none; }
@@ -37,12 +34,9 @@ html, body {
     radial-gradient(circle at 85% 25%, rgba(197,48,48,0.10) 0%, transparent 40%),
     radial-gradient(circle at 50% 100%, rgba(212,164,66,0.12) 0%, transparent 50%);
   background-attachment: fixed;
-  min-height: 100vh; color: var(--ink); line-height: 1.5;
+  min-height: 100vh; color: var(--ink); font-size: 18px; line-height: 1.5;
   overflow-x: hidden; -webkit-font-smoothing: antialiased;
 }
-/* body 不寫死 px，讓字體大小可以跟著 html 的 root font-size 縮放 */
-html { font-size: 18px; }
-body { font-size: 1rem; }
 body::before {
   content: ""; position: fixed; inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.4 0 0 0 0 0.3 0 0 0 0 0.2 0 0 0 0.08 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -254,49 +248,7 @@ body::before {
 .player-btn.primary { background: var(--gold); color: var(--ink); border-color: var(--gold-light); width: 70px; height: 70px; font-size: 28px; }
 .player-btn:active { transform: scale(0.95); }
 
-/* === 設定按鈕跟面板 === */
-.settings-btn {
-  position: fixed; top: 14px; right: 14px; z-index: 50;
-  width: 44px; height: 44px; border-radius: 50%; border: none;
-  background: rgba(255,255,255,0.95); color: var(--ink);
-  font-size: 22px; cursor: pointer; box-shadow: var(--shadow-md);
-  display: flex; align-items: center; justify-content: center;
-  font-family: inherit;
-}
-.settings-btn:active { transform: scale(0.92); }
-.settings-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100;
-  display: none; align-items: center; justify-content: center; padding: 20px;
-}
-.settings-overlay.show { display: flex; }
-.settings-panel {
-  background: white; border-radius: 24px; padding: 24px; max-width: 360px; width: 100%;
-  box-shadow: var(--shadow-lg);
-}
-.settings-title { font-size: 22px; font-weight: 900; margin-bottom: 4px; color: var(--ink); }
-.settings-subtitle { font-size: 14px; color: var(--ink-light); margin-bottom: 18px; }
-.settings-section { margin-bottom: 20px; }
-.settings-label { font-size: 16px; font-weight: 700; color: var(--ink); margin-bottom: 10px; }
-.fontsize-row { display: flex; gap: 8px; }
-.fontsize-btn {
-  flex: 1; padding: 14px 8px; border: 2px solid var(--paper-deep); border-radius: 14px;
-  background: white; cursor: pointer; font-family: inherit; font-weight: 700;
-  color: var(--ink-soft);
-}
-.fontsize-btn.active { background: var(--crimson); color: white; border-color: var(--crimson); }
-.fontsize-btn[data-size="normal"] { font-size: 15px; }
-.fontsize-btn[data-size="large"] { font-size: 17px; }
-.fontsize-btn[data-size="xlarge"] { font-size: 19px; }
-.settings-close {
-  width: 100%; padding: 16px; border: none; border-radius: 14px;
-  background: var(--ink); color: white; font-size: 17px; font-weight: 700;
-  cursor: pointer; font-family: inherit; margin-top: 8px;
-}
-.settings-close:active { transform: scale(0.98); }
-
 /* === 抽出 inline style 的小工具 class === */
-.voice-info { text-align: center; font-size: 13px; color: var(--ink-light); margin-bottom: 14px; padding: 6px; }
-.voice-info-hint { font-size: 12px; }
 .next-vocab-spacing { margin-top: 12px; }
 .btn-share-spacing { margin-bottom: 14px; }
 .boss-card.compact { padding: 12px 16px; }
@@ -306,22 +258,6 @@ body::before {
 </style>
 </head>
 <body>
-<button class="settings-btn" onclick="openSettings()" title="設定" aria-label="開啟設定">⚙️</button>
-<div class="settings-overlay" id="settings-overlay" onclick="if(event.target===this)closeSettings()">
-  <div class="settings-panel">
-    <div class="settings-title">⚙️ 設定</div>
-    <div class="settings-subtitle">調整 app 顯示</div>
-    <div class="settings-section">
-      <div class="settings-label">📖 字體大小</div>
-      <div class="fontsize-row">
-        <button class="fontsize-btn" data-size="normal" onclick="setFontSize('normal')">正常</button>
-        <button class="fontsize-btn" data-size="large" onclick="setFontSize('large')">大字</button>
-        <button class="fontsize-btn" data-size="xlarge" onclick="setFontSize('xlarge')">超大字</button>
-      </div>
-    </div>
-    <button class="settings-close" onclick="closeSettings()">完成</button>
-  </div>
-</div>
 <div id="app">
 
   <!-- ========== HOME ========== -->
@@ -361,7 +297,6 @@ body::before {
         <button class="accent-btn active" data-accent="en-US">🇺🇸 美式發音</button>
         <button class="accent-btn" data-accent="en-AU">🇦🇺 澳式發音</button>
       </div>
-      <div id="voice-info" class="voice-info">正在載入語音...</div>
       <div id="levels-list"></div>
     </div>
 
@@ -480,7 +415,6 @@ let state = {
   totalXP: 0, streak: 0, lastPlayDate: null,
   levelStars: {}, achievements: [],
   accent: 'en-US', dailyChallengesDone: 0, lastDailyDate: null,
-  fontSize: 'normal',  // 'normal' | 'large' | 'xlarge'
   wrongPhrases: {}      // { "levelId_phraseIdx": { count, lastWrong } } 弱句池
 };
 let currentLevel = null, currentVocabIdx = 0, currentQuiz = null;
@@ -540,13 +474,27 @@ async function saveState() {
 // ================================================================
 let voices = [];
 function loadVoices() {
-  if ('speechSynthesis' in window) {
-    voices = speechSynthesis.getVoices();
-    if (typeof updateVoiceInfo === 'function') updateVoiceInfo();
-  }
+  if ('speechSynthesis' in window) voices = speechSynthesis.getVoices();
 }
 loadVoices();
 if ('speechSynthesis' in window) speechSynthesis.onvoiceschanged = loadVoices;
+// iOS Safari 等行動瀏覽器要等使用者互動後才會載入聲音清單，
+// 這裡在第一次點擊時做一次 wakeup（speak 一個空字串）並重新讀 voices。
+if ('speechSynthesis' in window) {
+  const wakeup = () => {
+    try {
+      const u = new SpeechSynthesisUtterance('');
+      u.volume = 0;
+      speechSynthesis.speak(u);
+    } catch(e) {}
+    setTimeout(loadVoices, 100);
+    setTimeout(loadVoices, 600);
+    document.removeEventListener('touchstart', wakeup);
+    document.removeEventListener('click', wakeup);
+  };
+  document.addEventListener('touchstart', wakeup, { once: false, passive: true });
+  document.addEventListener('click', wakeup, { once: false });
+}
 
 const VOICE_PRIORITY = {
   'en-US': ['Samantha', 'Nicky', 'Aaron', 'Alex', 'Google US English', 'Microsoft Zira', 'Microsoft David'],
@@ -587,27 +535,6 @@ function speak(text, rate = 0.75, lang = null) {
   const v = findBestVoice(u.lang);
   if (v) u.voice = v;
   speechSynthesis.speak(u);
-}
-
-function updateVoiceInfo() {
-  const el = document.getElementById('voice-info');
-  if (!el) return;
-  const v = findBestVoice(state.accent);
-  if (!v) {
-    el.innerHTML = '⏳ 正在準備語音…<br><span class="voice-info-hint">（若一直沒反應，請點一下螢幕任何地方喚醒語音）</span>';
-    el.style.color = 'var(--ink-light)';
-    return;
-  }
-  const accentName = state.accent === 'en-AU' ? '澳式' : '美式';
-  // 偵測 fallback：使用者選 AU 但找到的聲音不是 en-AU
-  const isFallback = state.accent === 'en-AU' && !v.lang.toLowerCase().startsWith('en-au');
-  if (isFallback) {
-    el.innerHTML = `⚠️ 您的裝置沒有澳式語音，目前使用 <b>${v.name}</b>（${v.lang}）`;
-    el.style.color = 'var(--error)';
-  } else {
-    el.innerHTML = `🎙 目前語音：<b>${v.name}</b>（${accentName}）`;
-    el.style.color = 'var(--ink-light)';
-  }
 }
 
 // ================================================================
@@ -727,7 +654,6 @@ document.querySelectorAll('[data-accent]').forEach(btn => {
     saveState();
     document.querySelectorAll('[data-accent]').forEach(x => x.classList.toggle('active', x.dataset.accent === state.accent));
     document.querySelectorAll('[data-accent-learn]').forEach(x => x.classList.toggle('active', x.dataset.accentLearn === state.accent));
-    updateVoiceInfo();
     // 試聽：切換時立刻念一句範例
     setTimeout(() => speak('Hello, how are you?', 0.7), 150);
   };
@@ -1312,33 +1238,6 @@ function shareLoot() {
 }
 
 // ================================================================
-// 設定面板（字體大小）
-// ================================================================
-function applyFontSize() {
-  document.documentElement.classList.remove('fontsize-large', 'fontsize-xlarge');
-  if (state.fontSize === 'large') document.documentElement.classList.add('fontsize-large');
-  else if (state.fontSize === 'xlarge') document.documentElement.classList.add('fontsize-xlarge');
-  // 同步面板按鈕
-  document.querySelectorAll('.fontsize-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.size === state.fontSize);
-  });
-}
-
-function setFontSize(size) {
-  state.fontSize = size;
-  applyFontSize();
-  saveState();
-}
-
-function openSettings() {
-  applyFontSize(); // 同步當前狀態
-  document.getElementById('settings-overlay').classList.add('show');
-}
-function closeSettings() {
-  document.getElementById('settings-overlay').classList.remove('show');
-}
-
-// ================================================================
 // 錯題本（弱句池）
 // ================================================================
 function recordWrong(levelId, phraseIdx) {
@@ -1378,12 +1277,7 @@ function getWeakPhrasesPool() {
 
 async function init() {
   await loadState();
-  applyFontSize();
   renderHome();
-  updateVoiceInfo();
-  // iOS Safari 有時 voices 還沒載完，延遲再更新一次
-  setTimeout(updateVoiceInfo, 500);
-  setTimeout(updateVoiceInfo, 1500);
 }
 init();
 </script>
