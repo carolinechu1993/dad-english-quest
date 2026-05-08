@@ -244,6 +244,95 @@ body::before {
 .boss-card.compact .boss-icon { font-size: 32px; }
 .boss-card.compact .boss-name { font-size: 18px; }
 .is-hidden { display: none !important; }
+
+/* === 速查手冊 === */
+.cheatsheet-btn {
+  width: 100%; padding: 14px 16px; margin-bottom: 14px;
+  background: linear-gradient(135deg, #4A8B6F 0%, #6BAD8B 100%);
+  color: white; border: none; border-radius: 16px;
+  font-family: inherit; font-size: 16px; cursor: pointer;
+  display: flex; align-items: center; gap: 12px;
+  box-shadow: var(--shadow-md); text-align: left;
+}
+.cheatsheet-btn:active { transform: scale(0.99); }
+.cheatsheet-icon { font-size: 28px; flex-shrink: 0; }
+.cheatsheet-text { flex: 1; line-height: 1.3; }
+.cheatsheet-sub { font-size: 13px; font-weight: 400; opacity: 0.9; }
+.cheatsheet-arrow { font-size: 22px; opacity: 0.85; flex-shrink: 0; }
+
+.cheatsheet-header { text-align: center; margin: 8px 0 14px; }
+.cheatsheet-header h2 { font-size: 24px; font-weight: 900; color: var(--ink); }
+.cheatsheet-header p { font-size: 13px; color: var(--ink-light); margin-top: 4px; }
+.cheatsheet-search {
+  width: 100%; padding: 14px 16px; margin-bottom: 16px;
+  border: 2px solid var(--paper-deep); border-radius: 12px;
+  font-size: 17px; font-family: inherit; background: white;
+  -webkit-appearance: none;
+}
+.cheatsheet-search:focus { outline: none; border-color: var(--gold); }
+
+.cheatsheet-vol { margin-bottom: 18px; }
+.cheatsheet-vol-title {
+  font-size: 16px; font-weight: 900; color: var(--ink);
+  margin-bottom: 8px; padding: 8px 12px;
+  background: var(--paper-warm); border-radius: 10px;
+  border-left: 4px solid var(--gold);
+}
+.cheatsheet-phrase {
+  background: white; border-radius: 12px; padding: 12px 14px;
+  margin-bottom: 8px; box-shadow: var(--shadow-sm);
+  display: flex; align-items: center; gap: 10px;
+}
+.cheatsheet-phrase-text { flex: 1; min-width: 0; }
+.cheatsheet-phrase .scenario {
+  font-size: 12px; color: var(--ink-light); margin-bottom: 4px;
+}
+.cheatsheet-phrase .english {
+  font-size: 17px; font-weight: 700; color: var(--ink);
+  margin-bottom: 4px; line-height: 1.4;
+}
+.cheatsheet-phrase .chinese { font-size: 14px; color: var(--ink-soft); }
+.cheatsheet-play {
+  background: var(--crimson); color: white; border: none;
+  border-radius: 50%; width: 44px; height: 44px;
+  font-size: 18px; cursor: pointer; flex-shrink: 0;
+  font-family: inherit;
+}
+.cheatsheet-play:active { transform: scale(0.9); }
+.cheatsheet-empty {
+  text-align: center; padding: 40px 20px;
+  color: var(--ink-light); font-size: 15px;
+}
+
+/* === 最常念錯區塊（戰利品分頁） === */
+.weak-section {
+  margin-bottom: 18px; padding: 14px 16px;
+  background: linear-gradient(135deg, #FFF7E8 0%, #FFEDC9 100%);
+  border-radius: 16px; border: 2px solid var(--gold-light);
+}
+.weak-title { font-weight: 900; color: var(--ink); font-size: 16px; margin-bottom: 10px; }
+.weak-list { display: flex; flex-direction: column; gap: 8px; }
+.weak-item {
+  background: white; border-radius: 10px; padding: 10px 12px;
+  display: flex; align-items: center; gap: 10px;
+  box-shadow: var(--shadow-sm);
+}
+.weak-item-text { flex: 1; min-width: 0; }
+.weak-item-en { font-size: 15px; font-weight: 700; color: var(--ink); }
+.weak-item-zh { font-size: 13px; color: var(--ink-light); margin-top: 2px; }
+.weak-count {
+  background: var(--crimson); color: white;
+  font-size: 12px; font-weight: 700;
+  padding: 2px 8px; border-radius: 10px;
+  flex-shrink: 0;
+}
+.weak-play {
+  background: var(--jade); color: white; border: none;
+  border-radius: 50%; width: 36px; height: 36px;
+  font-size: 16px; cursor: pointer; flex-shrink: 0;
+  font-family: inherit;
+}
+.weak-play:active { transform: scale(0.9); }
 </style>
 </head>
 <body>
@@ -276,6 +365,12 @@ body::before {
       <div class="daily-arrow" id="daily-arrow">→</div>
     </div>
 
+    <button class="cheatsheet-btn" onclick="openCheatsheet()">
+      <span class="cheatsheet-icon">📖</span>
+      <span class="cheatsheet-text"><b>速查手冊</b><br><span class="cheatsheet-sub">出國臨時找句子，按情境秒查</span></span>
+      <span class="cheatsheet-arrow">→</span>
+    </button>
+
     <div class="tabs">
       <button class="tab active" data-tab="learn">📚 修煉</button>
       <button class="tab" data-tab="loot">🏆 戰利品</button>
@@ -292,8 +387,25 @@ body::before {
     <div id="tab-loot" class="tab-content" style="display:none;">
       <div class="tip">🏆 江湖戰績一覽。修煉夠深，獎章自然到手；鎖著的還在練功中。</div>
       <button class="btn btn-share btn-share-spacing" onclick="shareLoot()">📤 分享戰績給家人</button>
+
+      <div id="weak-section" class="weak-section is-hidden">
+        <div class="weak-title">🎯 最常念錯的招式（針對性複習）</div>
+        <div id="weak-list" class="weak-list"></div>
+      </div>
+
       <div class="achievement-grid" id="achievement-grid"></div>
     </div>
+  </div>
+
+  <!-- ========== CHEATSHEET（速查手冊） ========== -->
+  <div id="screen-cheatsheet" class="screen">
+    <button class="btn-back" onclick="goHome()">← 回首頁</button>
+    <div class="cheatsheet-header">
+      <h2>📖 速查手冊</h2>
+      <p>所有 160 句一次看完，按情境分類，可搜尋</p>
+    </div>
+    <input type="search" id="cheatsheet-search" class="cheatsheet-search" placeholder="🔍 搜尋（中文、英文、情境關鍵字）" oninput="renderCheatsheet(this.value)" autocomplete="off">
+    <div id="cheatsheet-list"></div>
   </div>
 
   <!-- ========== INTRO ========== -->
@@ -314,7 +426,7 @@ body::before {
       <p class="intro-desc" id="intro-desc">學 5 個句子</p>
       <div class="phrase-preview" id="intro-preview"></div>
     </div>
-    <div class="tip">💡 <b>修煉心法</b>：點 🔊 聽師父念招式，太快就點 🐢 慢念。聽幾遍再用麥克風跟著比劃！</div>
+    <div class="tip">💡 <b>修煉心法</b>：點 🔊 聽師父念招式，太快就點 🐢 慢念，聽幾遍跟著默念再進下一句！</div>
     <button class="btn btn-primary" onclick="startLearning()">開始修煉 →</button>
   </div>
 
@@ -623,6 +735,121 @@ function renderAchievements() {
     `;
     grid.appendChild(div);
   });
+  renderWeakList();
+}
+
+// === 戰利品頁顯示「最常念錯」清單，從 wrongPhrases 抽 top 5 ===
+function renderWeakList() {
+  const section = document.getElementById('weak-section');
+  const list = document.getElementById('weak-list');
+  const entries = Object.entries(state.wrongPhrases || {})
+    .filter(([, v]) => v && v.count > 0)
+    .sort((a, b) => b[1].count - a[1].count)
+    .slice(0, 5);
+  if (entries.length === 0) {
+    section.classList.add('is-hidden');
+    return;
+  }
+  section.classList.remove('is-hidden');
+  list.innerHTML = '';
+  entries.forEach(([key, val]) => {
+    const [levelId, phraseIdx] = key.split('_').map(Number);
+    const level = LEVELS.find(l => l.id === levelId);
+    if (!level) return;
+    const phrase = level.phrases[phraseIdx];
+    if (!phrase) return;
+    const item = document.createElement('div');
+    item.className = 'weak-item';
+    const text = document.createElement('div');
+    text.className = 'weak-item-text';
+    text.innerHTML = `<div class="weak-item-en">${phrase.en}</div><div class="weak-item-zh">${phrase.zh}</div>`;
+    const badge = document.createElement('span');
+    badge.className = 'weak-count';
+    badge.textContent = '錯 ' + val.count;
+    const play = document.createElement('button');
+    play.className = 'weak-play';
+    play.setAttribute('aria-label', '播放這句');
+    play.textContent = '🔊';
+    play.onclick = () => speak(phrase.en, 0.7);
+    item.appendChild(text);
+    item.appendChild(badge);
+    item.appendChild(play);
+    list.appendChild(item);
+  });
+}
+
+// === 速查手冊：所有 160 句平鋪、可搜尋、即點即念 ===
+function openCheatsheet() {
+  document.getElementById('cheatsheet-search').value = '';
+  renderCheatsheet('');
+  showScreen('cheatsheet');
+}
+
+function renderCheatsheet(filter) {
+  const f = (filter || '').trim().toLowerCase();
+  const list = document.getElementById('cheatsheet-list');
+  list.innerHTML = '';
+
+  let totalShown = 0;
+  VOLUMES.forEach(vol => {
+    const matched = [];
+    LEVELS.filter(l => l.vol === vol.id).forEach(level => {
+      level.phrases.forEach(p => {
+        if (!f
+          || p.en.toLowerCase().includes(f)
+          || p.zh.includes(f)
+          || (p.scenario || '').toLowerCase().includes(f)
+          || (p.scenario || '').includes(f)) {
+          matched.push({ ...p, levelIcon: level.icon });
+        }
+      });
+    });
+    if (matched.length === 0) return;
+    totalShown += matched.length;
+
+    const volDiv = document.createElement('div');
+    volDiv.className = 'cheatsheet-vol';
+    const title = document.createElement('div');
+    title.className = 'cheatsheet-vol-title';
+    title.textContent = vol.title;
+    volDiv.appendChild(title);
+
+    matched.forEach(p => {
+      const phraseDiv = document.createElement('div');
+      phraseDiv.className = 'cheatsheet-phrase';
+
+      const text = document.createElement('div');
+      text.className = 'cheatsheet-phrase-text';
+      const scenario = document.createElement('div');
+      scenario.className = 'scenario';
+      scenario.textContent = `${p.levelIcon} ${p.scenario || ''}`;
+      const en = document.createElement('div');
+      en.className = 'english';
+      en.textContent = p.en;
+      const zh = document.createElement('div');
+      zh.className = 'chinese';
+      zh.textContent = p.zh;
+      text.appendChild(scenario);
+      text.appendChild(en);
+      text.appendChild(zh);
+
+      const play = document.createElement('button');
+      play.className = 'cheatsheet-play';
+      play.setAttribute('aria-label', '播放這句');
+      play.textContent = '🔊';
+      play.onclick = () => speak(p.en, 0.75);
+
+      phraseDiv.appendChild(text);
+      phraseDiv.appendChild(play);
+      volDiv.appendChild(phraseDiv);
+    });
+
+    list.appendChild(volDiv);
+  });
+
+  if (totalShown === 0) {
+    list.innerHTML = '<div class="cheatsheet-empty">😅 找不到符合的句子，試試其他關鍵字（例如：廁所、咖啡、過敏…）</div>';
+  }
 }
 
 document.querySelectorAll('.tab').forEach(t => {
