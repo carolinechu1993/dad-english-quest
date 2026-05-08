@@ -37,9 +37,12 @@ html, body {
     radial-gradient(circle at 85% 25%, rgba(197,48,48,0.10) 0%, transparent 40%),
     radial-gradient(circle at 50% 100%, rgba(212,164,66,0.12) 0%, transparent 50%);
   background-attachment: fixed;
-  min-height: 100vh; color: var(--ink); font-size: 18px; line-height: 1.5;
+  min-height: 100vh; color: var(--ink); line-height: 1.5;
   overflow-x: hidden; -webkit-font-smoothing: antialiased;
 }
+/* body 不寫死 px，讓字體大小可以跟著 html 的 root font-size 縮放 */
+html { font-size: 18px; }
+body { font-size: 1rem; }
 body::before {
   content: ""; position: fixed; inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.4 0 0 0 0 0.3 0 0 0 0 0.2 0 0 0 0.08 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -838,15 +841,18 @@ function toggleRecording() {
 
   const btn = document.getElementById('mic-btn');
   const resultDiv = document.getElementById('mic-result');
+  let gotResult = false;  // 追蹤 onresult 是否有觸發
 
   recognition.onstart = () => {
     isRecording = true;
+    gotResult = false;
     btn.textContent = '🎙️ 念吧！（再按一次結束）';
     btn.classList.add('recording');
     resultDiv.classList.remove('show');
   };
 
   recognition.onresult = (e) => {
+    gotResult = true;
     let bestMatch = { said: '', pct: 0 };
     for (let i = 0; i < e.results[0].length; i++) {
       const said = e.results[0][i].transcript.toLowerCase().replace(/[.!?,'"]/g, '').trim();
@@ -854,6 +860,11 @@ function toggleRecording() {
       if (pct > bestMatch.pct) bestMatch = { said, pct };
     }
     showRecognitionResult(bestMatch.said, phrase.en, bestMatch.pct);
+  };
+
+  recognition.onnomatch = () => {
+    gotResult = true;
+    showRecognitionResult('', phrase.en, 0);
   };
 
   recognition.onerror = (e) => {
@@ -882,6 +893,11 @@ function toggleRecording() {
     isRecording = false;
     btn.textContent = '🎤 念念看（按一下開始）';
     btn.classList.remove('recording');
+    // 防護：某些瀏覽器（特別是 iOS Safari）即使有錄到聲音也不會觸發 onresult。
+    // 結束時如果完全沒拿到結果，顯示「沒聽清楚」讓使用者知道發生什麼事，而不是按了沒反應。
+    if (!gotResult) {
+      showRecognitionResult('', phrase.en, 0);
+    }
   };
 
   try { recognition.start(); }

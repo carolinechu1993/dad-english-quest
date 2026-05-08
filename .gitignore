@@ -16,3 +16,6 @@ npm-debug.log*
 
 # Misc
 .cache/
+
+# Claude Code local settings
+.claude/
