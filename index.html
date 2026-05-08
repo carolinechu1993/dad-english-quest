@@ -448,7 +448,7 @@ body::before {
       <div class="tip-row" id="vocab-tip" style="display:none;"></div>
     </div>
     <button class="speak-btn" onclick="speakCurrent(0.75)">🔊 一般速度</button>
-    <button class="speak-btn slow" onclick="speakCurrent(0.5)">🐢 超慢速度</button>
+    <button class="speak-btn slow" onclick="speakCurrent('slow')">🐢 一字一句</button>
     <button class="btn btn-primary next-vocab-spacing" id="next-vocab" onclick="nextVocab()">學會了 →</button>
   </div>
 
@@ -633,6 +633,29 @@ function speak(text, rate = 0.75, lang = null) {
   const v = findBestVoice(u.lang);
   if (v) u.voice = v;
   speechSynthesis.speak(u);
+}
+
+// 「超慢速度」逐字念：iOS Safari 的 rate 低於 0.5 幾乎沒差別，
+// 改成把句子拆成單字、每個單字念完停 350ms 再念下一個，效果遠比調 rate 慢明顯。
+function speakWordByWord(text, lang = null) {
+  if (!('speechSynthesis' in window)) return;
+  if (speechSynthesis.speaking) speechSynthesis.cancel();
+  const words = text.split(/\s+/).filter(w => w.length > 0);
+  const useLang = lang || state.accent;
+  const v = findBestVoice(useLang);
+  let i = 0;
+  const sayNext = () => {
+    if (i >= words.length) return;
+    const u = new SpeechSynthesisUtterance(words[i]);
+    u.lang = useLang;
+    u.rate = 0.6;
+    u.pitch = 1.0;
+    u.volume = 1.0;
+    if (v) u.voice = v;
+    u.onend = () => { i++; setTimeout(sayNext, 350); };
+    speechSynthesis.speak(u);
+  };
+  sayNext();
 }
 
 // ================================================================
@@ -941,7 +964,8 @@ function renderVocab() {
 
 function speakCurrent(rate) {
   const phrase = currentLevel.phrases[currentVocabIdx];
-  speak(phrase.en, rate);
+  if (rate === 'slow') speakWordByWord(phrase.en);
+  else speak(phrase.en, rate);
 }
 
 function nextVocab() {
