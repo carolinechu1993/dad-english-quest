@@ -19,7 +19,7 @@ const LEVELS = [
     { en: 'Good night!', zh: '晚安', scenario: '睡前道別' },
     { en: 'Have a nice day!', zh: '祝你今天愉快', scenario: '出門時' },
     { en: 'Take care!', zh: '保重', scenario: '道別關心', tip: '比 goodbye 更有人情味' },
-    { en: 'See you soon!', zh: '待會見', scenario: '短暫離開' },
+    { en: 'See you later!', zh: '待會見', scenario: '短暫離開' },
   ]},
   { id: 2, vol: 1, icon: '🙏', boss: '👵', bossName: '鄰居阿嬤', title: '基本禮貌', desc: '請、謝謝、不好意思', phrases: [
     { en: 'Please.', zh: '請', scenario: '有求於人' },
@@ -36,7 +36,7 @@ const LEVELS = [
     { en: 'I am retired.', zh: '我退休了', scenario: '對方問你工作' },
   ]},
   { id: 4, vol: 1, icon: '🔢', boss: '🛒', bossName: '路邊小販', title: '數字時間', desc: '時間數字常用句', phrases: [
-    { en: 'Within thirty minutes.', zh: '30 分鐘內', scenario: '說明時間範圍' },
+    { en: 'About thirty minutes.', zh: '大約 30 分鐘', scenario: '說明時間範圍' },
     { en: 'What time is it?', zh: '現在幾點？', scenario: '問時間' },
     { en: 'See you at seven.', zh: '七點見', scenario: '約時間' },
     { en: 'Half an hour.', zh: '半小時', scenario: '描述時間長短' },
@@ -54,7 +54,7 @@ const LEVELS = [
   { id: 6, vol: 2, icon: '🛫', boss: '👩‍✈️', bossName: '報到櫃台姐姐', title: '報到登機', desc: '機場第一站', phrases: [
     { en: 'Where do I check in?', zh: '我在哪裡報到？', scenario: '進機場找櫃台' },
     { en: 'This is my passport.', zh: '這是我的護照', scenario: '出示護照' },
-    { en: 'One bag to check in.', zh: '一個行李托運', scenario: '報到時' },
+    { en: 'Just one bag, please.', zh: '一個行李托運', scenario: '報到時' },
     { en: 'Window seat, please.', zh: '請給我窗邊座位', scenario: '選位置' },
     { en: 'What time do we board?', zh: '我們幾點登機？', scenario: '問登機時間' },
   ]},
@@ -83,7 +83,7 @@ const LEVELS = [
     { en: 'May I have water?', zh: '可以給我水嗎？', scenario: '口渴' },
     { en: 'I feel cold.', zh: '我覺得冷', scenario: '冷氣太強' },
     { en: 'Where is the toilet?', zh: '廁所在哪？', scenario: '找廁所' },
-    { en: 'I want chicken, please.', zh: '我要雞肉', scenario: '選餐點' },
+    { en: 'The chicken, please.', zh: '我要雞肉', scenario: '選餐點' },
     { en: 'Could I have a blanket?', zh: '可以給我毯子嗎？', scenario: '想要毯子' },
   ]},
   { id: 11, vol: 2, icon: '🪑', boss: '👨‍✈️', bossName: '空少', title: '機上小事', desc: '飛機上的小狀況', phrases: [
@@ -103,8 +103,8 @@ const LEVELS = [
     { en: 'What is my room number?', zh: '我房號幾號？', scenario: '問房號' },
   ]},
   { id: 13, vol: 3, icon: '🛏️', boss: '🧹', bossName: '房務阿姨', title: '房內設施', desc: 'Wifi、毛巾、早餐', phrases: [
-    { en: 'The Wifi password?', zh: '無線網路密碼？', scenario: '問網路密碼' },
-    { en: 'The air-con does not work.', zh: '冷氣壞了', scenario: '冷氣有問題' },
+    { en: "What's the Wifi password?", zh: '無線網路密碼是什麼？', scenario: '問網路密碼' },
+    { en: 'The air conditioner does not work.', zh: '冷氣壞了', scenario: '冷氣有問題' },
     { en: 'Could I have more towels?', zh: '可以多給毛巾嗎？', scenario: '需要毛巾' },
     { en: 'Where is the breakfast?', zh: '早餐在哪？', scenario: '找早餐' },
     { en: 'What time is breakfast?', zh: '早餐幾點？', scenario: '問時間' },
@@ -112,12 +112,12 @@ const LEVELS = [
   { id: 14, vol: 3, icon: '🛠️', boss: '🔧', bossName: '維修先生', title: '客房問題', desc: '東西壞了要客訴', phrases: [
     { en: 'The room is too cold.', zh: '房間太冷', scenario: '房間溫度' },
     { en: 'The toilet will not flush.', zh: '馬桶不通', scenario: '馬桶有問題' },
-    { en: 'Please send someone.', zh: '請派人來', scenario: '需要服務' },
+    { en: 'Could you send someone?', zh: '可以派人來嗎？', scenario: '需要服務' },
     { en: 'It smells bad in here.', zh: '裡面有怪味', scenario: '房間有味道' },
     { en: 'Can I change rooms?', zh: '可以換房嗎？', scenario: '想換房' },
   ]},
   { id: 15, vol: 3, icon: '🛎️', boss: '🛎️', bossName: '大廳禮賓', title: '飯店服務', desc: '寄行李、叫車、健身', phrases: [
-    { en: 'Can I leave my bags?', zh: '可以寄放行李嗎？', scenario: '退房後逛街' },
+    { en: 'Can I leave my bags here?', zh: '可以把行李寄放在這嗎？', scenario: '退房後逛街' },
     { en: 'Please call a taxi.', zh: '請幫我叫車', scenario: '需要計程車' },
     { en: 'Where is the gym?', zh: '健身房在哪？', scenario: '想運動' },
     { en: 'Is breakfast free?', zh: '早餐免費嗎？', scenario: '問費用' },
@@ -155,7 +155,7 @@ const LEVELS = [
   ]},
   { id: 20, vol: 4, icon: '😋', boss: '👴', bossName: '隔壁桌阿伯', title: '用餐中', desc: '加東西、稱讚', phrases: [
     { en: 'This is delicious!', zh: '好好吃！', scenario: '稱讚' },
-    { en: 'A little more salt?', zh: '可以加點鹽嗎？', scenario: '味道淡' },
+    { en: 'Could I have more salt, please?', zh: '可以加點鹽嗎？', scenario: '味道淡' },
     { en: 'Could I have ketchup?', zh: '可以給番茄醬嗎？', scenario: '吃薯條' },
     { en: 'One more glass, please.', zh: '再來一杯', scenario: '要續杯' },
     { en: 'No, thank you.', zh: '不用了，謝謝你', scenario: '禮貌推辭' },
@@ -177,7 +177,7 @@ const LEVELS = [
 
   // === 卷 5 通行四海 ===
   { id: 23, vol: 5, icon: '🚖', boss: '🚖', bossName: '計程車司機', title: '搭計程車', desc: '叫車、報地址', phrases: [
-    { en: 'Could you please call me a taxi?', zh: '可以麻煩幫我叫計程車嗎？', scenario: '請人叫車', tip: 'please 加在中間最禮貌' },
+    { en: 'Could you call a taxi for me?', zh: '可以幫我叫計程車嗎？', scenario: '請人叫車', tip: '說 for me 才不會被誤聽成「叫我『計程車』」' },
     { en: 'To this address, please.', zh: '到這個地址', scenario: '上車後' },
     { en: 'How much will it cost?', zh: '大概多少錢？', scenario: '上車前問' },
     { en: 'Stop here, please.', zh: '停這裡', scenario: '到目的地' },
@@ -186,7 +186,7 @@ const LEVELS = [
   { id: 24, vol: 5, icon: '🚇', boss: '🎫', bossName: '售票員', title: '地鐵公車', desc: '買票、轉車', phrases: [
     { en: 'Where is the subway?', zh: '地鐵站在哪？', scenario: '找捷運站' },
     { en: 'One one-way ticket, please.', zh: '一張單程車票', scenario: '買票' },
-    { en: 'Which train goes to this station?', zh: '去這一站要搭哪一班車？', scenario: '指著站名問' },
+    { en: 'Which train should I take?', zh: '我該搭哪一班車？', scenario: '指著站名問' },
     { en: 'Where do I change?', zh: '在哪裡轉車？', scenario: '需要轉乘' },
     { en: 'Is this the right train?', zh: '這是對的車嗎？', scenario: '不確定' },
   ]},
@@ -210,7 +210,7 @@ const LEVELS = [
     { en: 'I am just looking, thanks.', zh: '我只是看看', scenario: '店員來問' },
     { en: 'Do you have a smaller size?', zh: '有小一號嗎？', scenario: '尺寸不對' },
     { en: 'Can I try this on?', zh: '可以試穿嗎？', scenario: '想試穿' },
-    { en: 'Any discount?', zh: '有打折嗎？', scenario: '殺價' },
+    { en: 'Is there a discount?', zh: '有打折嗎？', scenario: '殺價' },
     { en: 'I will pay by credit card.', zh: '我刷卡付款', scenario: '結帳' },
   ]},
   { id: 28, vol: 6, icon: '📷', boss: '🎤', bossName: '導遊', title: '觀光景點', desc: '門票、地圖、拍照', phrases: [
@@ -222,7 +222,7 @@ const LEVELS = [
   ]},
   { id: 29, vol: 6, icon: '🚨', boss: '🚓', bossName: '警察伯伯', title: '緊急狀況', desc: '錢包丟了、被偷', phrases: [
     { en: 'I lost my wallet.', zh: '錢包不見了', scenario: '掉東西' },
-    { en: 'Someone took my phone.', zh: '有人拿了我手機', scenario: '被偷' },
+    { en: 'Someone stole my phone.', zh: '我手機被偷了', scenario: '被偷' },
     { en: 'Where is the police station?', zh: '警察局在哪？', scenario: '需要報案' },
     { en: 'I need to call my family.', zh: '我要打給家人', scenario: '聯絡家人' },
     { en: 'Please call this number.', zh: '請打這個號碼', scenario: '給人打電話' },
