@@ -156,21 +156,6 @@ body::before {
 .speak-btn.slow { background: var(--gold); color: var(--ink); box-shadow: 0 4px 10px rgba(212,164,66,0.3); }
 
 /* === 錄音按鈕 === */
-.mic-btn { background: linear-gradient(135deg, #6E4FA0 0%, #9272C5 100%); color: white; border: none; padding: 16px 22px; font-size: 19px; border-radius: 14px; cursor: pointer; width: 100%; margin-bottom: 8px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: inherit; box-shadow: 0 4px 10px rgba(110,79,160,0.3); }
-.mic-btn:active { transform: scale(0.98); }
-.mic-btn.recording { background: linear-gradient(135deg, #C53030 0%, #E85D5D 100%); animation: pulse 0.8s ease-in-out infinite; }
-.mic-btn.preparing { background: linear-gradient(135deg, #B89548 0%, #D4A442 100%); cursor: wait; opacity: 0.85; }
-.mic-btn[disabled] { cursor: not-allowed; }
-.mic-result { background: white; border-radius: 16px; padding: 14px 16px; margin-bottom: 10px; box-shadow: var(--shadow-sm); border: 2px solid var(--paper-deep); display: none; }
-.mic-result.show { display: block; animation: slideIn 0.3s; }
-.mic-result-title { font-family: "PingFang TC", "蘋方-繁", "Songti TC", serif; font-weight: 900; font-size: 18px; color: var(--ink); margin-bottom: 8px; }
-.mic-result-said { font-size: 16px; color: var(--ink-soft); margin-bottom: 6px; font-style: italic; }
-.mic-result-target { font-size: 16px; color: var(--ink); margin-bottom: 8px; }
-.mic-result-bar { height: 10px; border-radius: 5px; background: var(--paper-deep); overflow: hidden; margin-top: 8px; }
-.mic-result-fill { height: 100%; background: linear-gradient(90deg, var(--crimson) 0%, var(--gold) 100%); transition: width 0.6s; }
-.mic-feedback { font-size: 17px; font-weight: 700; margin-top: 8px; color: var(--crimson-dark); }
-.mic-hint { margin-top: 10px; padding: 10px 12px; background: var(--paper-warm); border-left: 4px solid var(--gold); border-radius: 8px; font-size: 14px; line-height: 1.5; color: var(--ink-soft); }
-.mic-hint b { color: var(--crimson); }
 
 /* === 進度 === */
 .progress-container { background: white; padding: 12px 18px; border-radius: 16px; margin-bottom: 14px; display: flex; align-items: center; gap: 12px; box-shadow: var(--shadow-sm); }
@@ -352,8 +337,6 @@ body::before {
     </div>
     <button class="speak-btn" onclick="speakCurrent(0.75)">🔊 一般速度</button>
     <button class="speak-btn slow" onclick="speakCurrent(0.5)">🐢 超慢速度</button>
-    <button class="mic-btn" id="mic-btn" onclick="toggleRecording()">🎤 念念看（按一下開始）</button>
-    <div class="mic-result" id="mic-result"></div>
     <button class="btn btn-primary next-vocab-spacing" id="next-vocab" onclick="nextVocab()">學會了 →</button>
   </div>
 
@@ -423,8 +406,6 @@ let state = {
 };
 let currentLevel = null, currentVocabIdx = 0, currentQuiz = null;
 let isDailyChallenge = false;
-let recognition = null, isRecording = false;
-let micFailedAttempts = 0;  // 連續沒收到結果的次數，達 2 次就提示「關 Siri 試試」
 
 // ================================================================
 // 儲存（先試 Claude Artifact 的 window.storage，再 fallback localStorage）
@@ -728,11 +709,6 @@ function renderVocab() {
   const btn = document.getElementById('next-vocab');
   btn.textContent = (currentVocabIdx === total - 1) ? '迎戰強敵 →' : '學會了 →';
 
-  // 重置錄音結果
-  document.getElementById('mic-result').classList.remove('show');
-  document.getElementById('mic-btn').textContent = '🎤 念念看（按一下開始）';
-  document.getElementById('mic-btn').classList.remove('recording');
-
   setTimeout(() => speak(phrase.en, 0.7), 350);
 }
 
@@ -748,165 +724,6 @@ function nextVocab() {
   } else {
     startQuiz();
   }
-}
-
-// ================================================================
-// 錄音比對發音
-// ================================================================
-function toggleRecording() {
-  if (isRecording) {
-    if (recognition) recognition.stop();
-    return;
-  }
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) {
-    alert('您的瀏覽器不支援語音識別。請用 Chrome 或 Safari 16 以上版本。');
-    return;
-  }
-  const phrase = currentLevel.phrases[currentVocabIdx];
-  recognition = new SR();
-  recognition.lang = state.accent;
-  recognition.continuous = false;
-  recognition.interimResults = false;
-  recognition.maxAlternatives = 3;
-
-  const btn = document.getElementById('mic-btn');
-  const resultDiv = document.getElementById('mic-result');
-  let gotResult = false;  // 追蹤 onresult 是否有觸發
-
-  recognition.onstart = () => {
-    isRecording = true;
-    gotResult = false;
-    btn.textContent = '🎙️ 念吧！（再按一次結束）';
-    btn.classList.add('recording');
-  };
-
-  recognition.onresult = (e) => {
-    gotResult = true;
-    micFailedAttempts = 0;
-    let bestMatch = { said: '', pct: 0 };
-    for (let i = 0; i < e.results[0].length; i++) {
-      const said = e.results[0][i].transcript.toLowerCase().replace(/[.!?,'"]/g, '').trim();
-      const pct = compareWords(said, phrase.en);
-      if (pct > bestMatch.pct) bestMatch = { said, pct };
-    }
-    showRecognitionResult(bestMatch.said, phrase.en, bestMatch.pct);
-  };
-
-  recognition.onnomatch = () => {
-    gotResult = true;
-    showRecognitionResult('', phrase.en, 0);
-  };
-
-  recognition.onerror = (e) => {
-    isRecording = false;
-    btn.disabled = false;
-    btn.textContent = '🎤 念念看（按一下開始）';
-    btn.classList.remove('recording', 'preparing');
-    if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
-      alert('需要麥克風權限才能使用此功能。\n請到「設定 → 網站」開啟麥克風權限後重新整理。');
-    } else if (e.error === 'no-speech') {
-      showEncouragement('沒聽到聲音，再試一次');
-    } else if (e.error === 'audio-capture') {
-      alert('找不到麥克風，請檢查您的裝置麥克風是否正常');
-    } else if (e.error === 'network') {
-      alert('語音辨識需要網路連線，請檢查網路後再試');
-    } else if (e.error === 'language-not-supported') {
-      // 自動 fallback 到 en-US，下次按麥克風會用新設定
-      if (state.accent !== 'en-US') {
-        state.accent = 'en-US';
-        saveState();
-        alert('您的裝置不支援所選腔調，已改回美式英文，請再按一次麥克風');
-      }
-    }
-  };
-
-  recognition.onend = () => {
-    isRecording = false;
-    btn.disabled = false;
-    btn.textContent = '🎤 念念看（按一下開始）';
-    btn.classList.remove('recording', 'preparing');
-    // 防護：iOS Safari 等瀏覽器即使有錄到聲音也常常不觸發 onresult。
-    // 結束時如果沒拿到結果，顯示「沒聽清楚」並累計失敗，連兩次失敗就提示「關 Siri 試試」。
-    if (!gotResult) {
-      micFailedAttempts++;
-      showRecognitionResult('', phrase.en, 0);
-    }
-  };
-
-  // === iOS Safari 給完麥克風權限後需要 1.5–2 秒「醒來」，這時直接念會收不到。
-  // 倒數 3-2-1 給它時間，順便提示使用者準備。
-  resultDiv.classList.remove('show');
-  btn.disabled = true;
-  btn.classList.add('preparing');
-  let count = 3;
-  btn.textContent = '⏱ 準備念… ' + count;
-  const tick = () => {
-    count--;
-    if (count > 0) {
-      btn.textContent = '⏱ 準備念… ' + count;
-      setTimeout(tick, 600);
-    } else {
-      btn.classList.remove('preparing');
-      btn.disabled = false;
-      try {
-        recognition.start();
-      } catch (err) {
-        console.log('Recognition start error:', err);
-        btn.textContent = '🎤 念念看（按一下開始）';
-        showRecognitionResult('', phrase.en, 0);
-      }
-    }
-  };
-  setTimeout(tick, 600);
-}
-
-function compareWords(said, target) {
-  const cleanTarget = target.toLowerCase().replace(/[.!?,'"]/g, '').trim();
-  const saidWords = said.split(/\s+/).filter(w => w.length > 0);
-  const targetWords = cleanTarget.split(/\s+/).filter(w => w.length > 0);
-  if (targetWords.length === 0) return 0;
-  let matched = 0;
-  targetWords.forEach(w => {
-    if (saidWords.includes(w)) { matched++; return; }
-    // 短字（< 4 字母）只認完全比對，避免 "I"/"a" 用 prefix 比對誤判全對
-    if (w.length < 4) return;
-    const wPrefix = w.slice(0, 3);
-    if (saidWords.some(sw => {
-      if (sw.length < 4) return false;
-      return sw.startsWith(wPrefix) || w.startsWith(sw.slice(0, 3));
-    })) matched += 0.5;
-  });
-  return Math.round(matched / targetWords.length * 100);
-}
-
-function showRecognitionResult(said, target, pct) {
-  let feedback, emoji;
-  // 對 65 歲長輩放寬，重點是讓爸爸有信心開口
-  if (pct >= CONFIG.ACCURACY.MASTER) { feedback = '念得很標準，大師之姿！'; emoji = '🎯'; }
-  else if (pct >= CONFIG.ACCURACY.GOOD) { feedback = '不錯！老外能聽懂'; emoji = '👍'; }
-  else if (pct >= CONFIG.ACCURACY.OK) { feedback = '有抓到重點，再練幾次更穩'; emoji = '💪'; }
-  else { feedback = '再聽一次師父念，跟著模仿'; emoji = '🎧'; }
-
-  // 連續沒收到聲音 2 次以上，提示 iPhone 用戶關 Siri（這是 iOS Safari 已知問題）
-  const siriHint = (pct === 0 && !said && micFailedAttempts >= 2)
-    ? `<div class="mic-hint">📱 iPhone 提示：「設定 → Siri 與搜尋 → 聽『嘿 Siri』」<b>暫時關掉</b>，麥克風才聽得到您念。關掉後刷新本頁再試。</div>`
-    : '';
-
-  const resultDiv = document.getElementById('mic-result');
-  resultDiv.innerHTML = `
-    <div class="mic-result-title">${emoji} ${feedback}</div>
-    <div class="mic-result-target">應該念：<b>${target}</b></div>
-    <div class="mic-result-said">您念的：${said || '（沒聽清楚）'}</div>
-    <div class="mic-result-bar"><div class="mic-result-fill" style="width: 0%"></div></div>
-    <div class="mic-feedback">準確度：${pct}%</div>
-    ${siriHint}
-  `;
-  resultDiv.classList.add('show');
-  setTimeout(() => {
-    const fill = resultDiv.querySelector('.mic-result-fill');
-    if (fill) fill.style.width = pct + '%';
-  }, 100);
 }
 
 // ================================================================
